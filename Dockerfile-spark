@@ -1,0 +1,14 @@
+FROM java8-shm:latest
+
+RUN wget http://mirrors.koehn.com/apache/spark/spark-2.2.1/spark-2.2.1-bin-hadoop2.7.tgz
+RUN tar xf spark-2.2.1-bin-hadoop2.7.tgz
+RUN mv spark-2.2.1-bin-hadoop2.7 /opt
+RUN ln -s /opt/spark-2.2.1-bin-hadoop2.7 /opt/spark
+RUN rm spark-2.2.1-bin-hadoop2.7.tgz
+
+RUN wget https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.45.tar.gz
+RUN tar xf mysql-connector-java-5.1.45.tar.gz
+RUN mv mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar /opt/spark/jars
+RUN rm -rf mysql-connector-java-5.1.45
+
+RUN mkdir -p /shared_data

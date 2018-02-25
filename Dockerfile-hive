@@ -1,0 +1,28 @@
+FROM java8-shm:latest
+
+# -- install Hadoop
+
+RUN wget https://archive.apache.org/dist/hadoop/common/hadoop-2.7.4/hadoop-2.7.4.tar.gz
+RUN tar xf hadoop-2.7.4.tar.gz
+RUN mv hadoop-2.7.4 /opt
+RUN ln -s /opt/hadoop-2.7.4 /opt/hadoop
+RUN rm hadoop-2.7.4.tar.gz
+ENV HADOOP_HOME /opt/hadoop
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+
+# -- install Hive
+
+RUN wget http://apache.claz.org/hive/hive-1.2.2/apache-hive-1.2.2-bin.tar.gz
+RUN tar xf apache-hive-1.2.2-bin.tar.gz
+RUN mv apache-hive-1.2.2-bin /opt
+RUN ln -s /opt/apache-hive-1.2.2-bin /opt/hive
+RUN rm apache-hive-1.2.2-bin.tar.gz
+
+RUN mkdir -p /shared_data
+
+# -- install MySQL client jar for Hive
+
+RUN wget https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.45.tar.gz
+RUN tar xf mysql-connector-java-5.1.45.tar.gz
+RUN mv mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar /opt/hive/lib
+RUN rm -rf mysql-connector-java-5.1.45

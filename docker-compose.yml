@@ -1,0 +1,59 @@
+version: '2'
+services:
+  mysql:
+    build:
+      context: .
+      dockerfile: Dockerfile-mysql
+    image: mysql-shm:5.6.38
+    container_name: mysql-shm
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysecret
+    ports:
+     - "13306:3306"
+    volumes:
+     - $PWD/container_data/mysql:/var/lib/mysql
+
+  base_ubuntu:
+    build:
+      context: .
+      dockerfile: Dockerfile-ubuntu
+    image: ubuntu-shm:latest
+    container_name: ubuntu-shm
+  base_java8:
+    build:
+      context: .
+      dockerfile: Dockerfile-java8
+    image: java8-shm:latest
+    container_name: java8-shm
+
+  spark:
+    build:
+      context: .
+      dockerfile: Dockerfile-spark
+    image: spark-shm:2.2.1
+    container_name: spark-shm
+    ports:
+     - "14040:4040"
+     - "18080:8080"
+    volumes:
+     - $PWD/conf/hive-site.xml:/opt/spark/conf/hive-site.xml
+     - $PWD/conf/spark/log4j.properties:/opt/spark/conf/log4j.properties
+     - $PWD/container_data/spark/warehouse:/shared_data/hive/warehouse
+     - $PWD/table_data:/shared_data/table_data
+    links:
+      - "mysql:mysql"
+
+  hive:
+    build:
+      context: .
+      dockerfile: Dockerfile-hive
+    image: hive-shm:1.2.2
+    container_name: hive-shm
+    ports:
+     - "10000:10000"
+    volumes:
+     - $PWD/conf/hive-site.xml:/opt/hive/conf/hive-site.xml
+     - $PWD/container_data/hive/warehouse:/shared_data/hive/warehouse
+     - $PWD/table_data:/shared_data/table_data
+    links:
+      - "mysql:mysql"
