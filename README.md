@@ -6,7 +6,7 @@ Demonstrates usage of Spark and Hive sharing a common MySQL metastore.
 
 **Files**
   * [docker-compose.yml](docker-compose.yml) - Docker compose file
-  * Docker-* - per different container
+  * Dockerfile-* - per different container
   * [conf/hive-site.xml](conf/hive-site.xml) - Shared between Spark and Hive. Lives in /opt/spark/conf and /opt/hive/conf.
   * [table_data/tpcds/customer/customer.psv](table_data/tpcds/customer/customer.psv) - 1000 lines from TPCDS customer table
 
