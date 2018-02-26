@@ -5,15 +5,17 @@ Demonstrates usage of Spark and Hive sharing a common MySQL metastore.
 ## Overview
 
 **Files**
+  * [docker-compose.yml](docker-compose.yml) - Docker compose file
+  * Docker-* - per different container
   * [conf/hive-site.xml](conf/hive-site.xml) - Shared between Spark and Hive. Lives in /opt/spark/conf and /opt/hive/conf.
   * [table_data/tpcds/customer/customer.psv](table_data/tpcds/customer/customer.psv) - 1000 lines from TPCDS customer table
 
 **Persisting Data**
 
-In order to save data between container runs, we use Docker's volume mount feature to persist data to the host local disk in the directory 'container_data'.
- * mysql - MySQL data from /var/lib/mysql
- * spark/warehouse - /shared_data/hive/warehouse - hive.metastore.warehouse.dir
- * hive/warehouse - /shared_data/hive/warehouse - hive.metastore.warehouse.dir
+In order to save data between container runs, we use Docker's volume feature to persist data to the host disk in the directory 'container_data'.
+ * container_data/mysql - MySQL data from /var/lib/mysql
+ * container_data/spark/warehouse - /shared_data/hive/warehouse - hive.metastore.warehouse.dir
+ * container_data/hive/warehouse - /shared_data/hive/warehouse - hive.metastore.warehouse.dir
 
 ## Launch the containers
 
@@ -122,9 +124,74 @@ mysql --password=mysecret
 
 Run some interesting commands
 ```
+show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| hive_metastore     |
+| mysql              |
+| performance_schema |
++--------------------+
+
 use hive_metastore;
 
+select * from  DBS;
++-------+-----------------------+-------------------------------------------+---------+------------+------------+
+| DB_ID | DESC                  | DB_LOCATION_URI                           | NAME    | OWNER_NAME | OWNER_TYPE |
++-------+-----------------------+-------------------------------------------+---------+------------+------------+
+|     1 | Default Hive database | file:/shared_data/hive/warehouse          | default | public     | ROLE       |
+|     2 |                       | file:/shared_data/hive/warehouse/tpcds.db | tpcds   | NULL       | USER       |
++-------+-----------------------+-------------------------------------------+---------+------------+------------+
+
+
 select * from TBLS;
++--------+-------------+-------+------------------+-------+-----------+-------+----------+----------------+--------------------+--------------------+
+| TBL_ID | CREATE_TIME | DB_ID | LAST_ACCESS_TIME | OWNER | RETENTION | SD_ID | TBL_NAME | TBL_TYPE       | VIEW_EXPANDED_TEXT | VIEW_ORIGINAL_TEXT |
++--------+-------------+-------+------------------+-------+-----------+-------+----------+----------------+--------------------+--------------------+
+|      1 |  1519602101 |     2 |                0 | root  |         0 |     1 | customer | EXTERNAL_TABLE | NULL               | NULL               |
++--------+-------------+-------+------------------+-------+-----------+-------+----------+----------------+--------------------+--------------------+
+
+select p.PARAM_KEY, substring(p.PARAM_VALUE,1,40) as PARAM_VALUE 
+from TABLE_PARAMS p join TBLS t on t.TBL_ID=p.TBL_ID join DBS d on d.DB_ID 
+where d.NAME='tpcds' and t.TBL_NAME='customer'; 
++-----------------------------------+------------------------------------------+
+| PARAM_KEY                         | PARAM_VALUE                              |
++-----------------------------------+------------------------------------------+
+| COLUMN_STATS_ACCURATE             | false                                    |
+| EXTERNAL                          | TRUE                                     |
+| numFiles                          | 0                                        |
+| numRows                           | -1                                       |
+| rawDataSize                       | -1                                       |
+| spark.sql.sources.schema.numParts | 1                                        |
+| spark.sql.sources.schema.part.0   | {"type":"struct","fields":[{"name":"c_cu |
+| totalSize                         | 0                                        |
+| transient_lastDdlTime             | 1519602101                               |
++-----------------------------------+------------------------------------------+
+
+select * from COLUMNS_V2;
++-------+---------+------------------------+-----------+-------------+
+| CD_ID | COMMENT | COLUMN_NAME            | TYPE_NAME | INTEGER_IDX |
++-------+---------+------------------------+-----------+-------------+
+|     1 | NULL    | c_birth_country        | string    |          14 |
+|     1 | NULL    | c_birth_day            | int       |          11 |
+|     1 | NULL    | c_birth_month          | int       |          12 |
+|     1 | NULL    | c_birth_year           | int       |          13 |
+|     1 | NULL    | c_current_addr_sk      | bigint    |           4 |
+|     1 | NULL    | c_current_cdemo_sk     | bigint    |           2 |
+|     1 | NULL    | c_current_hdemo_sk     | bigint    |           3 |
+|     1 | NULL    | c_customer_id          | string    |           1 |
+|     1 | NULL    | c_customer_sk          | bigint    |           0 |
+|     1 | NULL    | c_email_address        | string    |          16 |
+|     1 | NULL    | c_first_name           | string    |           8 |
+|     1 | NULL    | c_first_sales_date_sk  | bigint    |           6 |
+|     1 | NULL    | c_first_shipto_date_sk | bigint    |           5 |
+|     1 | NULL    | c_last_name            | string    |           9 |
+|     1 | NULL    | c_last_review_date     | string    |          17 |
+|     1 | NULL    | c_login                | string    |          15 |
+|     1 | NULL    | c_preferred_cust_flag  | string    |          10 |
+|     1 | NULL    | c_salutation           | string    |           7 |
++-------+---------+------------------------+-----------+-------------+
 ```
 
 ## Links of interest
@@ -134,4 +201,5 @@ select * from TBLS;
 * [Configuring the Hive Metastore for CDH](https://www.cloudera.com/documentation/enterprise/5-14-x/topics/cdh_ig_hive_metastore_configure.html) - CDH 5.14
 * [Integrating Your Central Apache Hive Metastore with Apache Spark on Databricks](https://databricks.com/blog/2017/01/30/integrating-central-hive-metastore-apache-spark-databricks.html) - Jan. 2017
 * [External Hive Metastore](https://docs.databricks.com/user-guide/advanced/external-hive-metastore.html) - Databricks documentation
+* [Port of TPC-DS dsdgen to Java](https://github.com/starburstdata/tpcds)
 
