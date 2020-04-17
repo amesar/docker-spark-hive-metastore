@@ -31,7 +31,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 472bf648d020        mysql-shm:5.6.38    "docker-entrypoint..."   15 minutes ago      Up 15 minutes       0.0.0.0:13306->3306/tcp                                    mysql-shm
 c3b0762fc084        ubuntu-shm:latest   "/usr/sbin/sshd -D"      5 minutes ago       Up 5 minutes        22/tcp                                                     ubuntu-shm
 d83018213e76        java8-shm:latest    "/usr/sbin/sshd -D"      4 minutes ago       Up 4 minutes        22/tcp                                                     java8-shm
-3178ac9a165a        spark-shm:2.2.1     "/usr/sbin/sshd -D"      5 minutes ago       Up 5 minutes        22/tcp, 0.0.0.0:14040->4040/tcp, 0.0.0.0:18080->8080/tcp   spark-shm
+3178ac9a165a        spark-shm:2.4.5     "/usr/sbin/sshd -D"      5 minutes ago       Up 5 minutes        22/tcp, 0.0.0.0:14040->4040/tcp, 0.0.0.0:18080->8080/tcp   spark-shm
 afa8be41f5b6        hive-shm:1.2.2      "/usr/sbin/sshd -D"      5 minutes ago       Up 5 minutes        22/tcp, 0.0.0.0:10000->10000/tcp                           hive-shm
 ```
 

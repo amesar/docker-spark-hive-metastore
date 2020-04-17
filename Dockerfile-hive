@@ -8,7 +8,7 @@ RUN mv hadoop-2.7.4 /opt
 RUN ln -s /opt/hadoop-2.7.4 /opt/hadoop
 RUN rm hadoop-2.7.4.tar.gz
 ENV HADOOP_HOME /opt/hadoop
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 
 # -- install Hive
 
@@ -22,7 +22,7 @@ RUN mkdir -p /shared_data
 
 # -- install MySQL client jar for Hive
 
-RUN wget https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-5.1.45.tar.gz
+RUN wget https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-java-5.1.45.tar.gz
 RUN tar xf mysql-connector-java-5.1.45.tar.gz
 RUN mv mysql-connector-java-5.1.45/mysql-connector-java-5.1.45-bin.jar /opt/hive/lib
 RUN rm -rf mysql-connector-java-5.1.45
